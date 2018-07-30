@@ -5,6 +5,7 @@ Created on Thu Jul 26 15:18:46 2018
 @author: asalkanovic1
 
 Tutorial: https://blog.goodaudience.com/predicting-fifa-world-cup-2018-using-machine-learning-dc07ad8dd576
+https://github.com/itsmuriuki/FIFA-2018-World-cup-predictions/blob/master/Predicting%20Fifa%202018.ipynb
 """
 
 import pandas as pd
@@ -15,6 +16,7 @@ import matplotlib.ticker as ticker
 import matplotlib.ticker as plticker
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 
 # Loading the data sets
 world_cup = pd.read_csv('C:\\Users\\asalkanovic1\\Downloads\\WC\\World Cup 2018 Dataset.csv')
@@ -69,11 +71,11 @@ plt.show()
 worldcup_teams = ['Australia', 'Iran', 'Japan', 'Korea Republic',
                   'Saudi Arabia', 'Egypt', 'Morocco', 'Nigeria',
                   'Senegal', 'Tunisia', 'Costa Rica', 'Mexico',
-                  'Panama', 'Argentina', 'Brazil', 'Columbia',
+                  'Panama', 'Argentina', 'Brazil', 'Colombia',
                   'Peru', 'Uruguay', 'Belgium', 'Croatia',
                   'Denmark', 'England', 'France', 'Germany',
                   'Iceland', 'Poland', 'Portugal', 'Russia',
-                  'Servia', 'Spain', 'Sweden', 'Switzerland']
+                  'Serbia', 'Spain', 'Sweden', 'Switzerland']
 
 df_teams_home = results[results['home_team'].isin(worldcup_teams)]
 df_teams_away = results[results['away_team'].isin(worldcup_teams)]
@@ -115,8 +117,38 @@ final = pd.get_dummies(df_teams_1930, prefix = ['home_team','away_team'], column
 
 # Separate X and Y sets
 X = final.drop(['winning_team'], axis = 1)
-Y = final['winning_team']
+Y = final["winning_team"]
 Y = Y.astype('int')
 
 # Separate train and test sets
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.30, random_state = 42)
+
+logreg = LogisticRegression()
+logreg.fit(X_train, Y_train)
+score = logreg.score(X_train, Y_train)
+score2 = logreg.score(X_test, Y_test)
+print("LR - Training set accuracy: ", '%.3f'%(score))
+print("LR - Test set accuracy: ", '%.3f'%(score2))
+
+#svm = SVC()
+#svm.fit(X_train, Y_train)
+#score3 = svm.score(X_train, Y_train)
+#score4 = svm.score(X_test, Y_test)
+#print("SVM - Training set accuracy: ", '%.3f'%(score3))
+#print("SVM - Test set accuracy: ", '%.3f'%(score4))
+
+# Let's consider Fifa Rankings
+# The team which is positioned high in the FIFA Rankings wil lbe considered the 
+# "favourite" for the match and therefore, will be positioned under the "home_teams"
+# column since there are no "home" or "away" teams in the World Cup fixtures.
+
+# Loading new datasets
+ranking = pd.read_csv('C:\\Users\\asalkanovic1\\Downloads\\WC\\fifa_rankings.csv')
+fixtures = pd.read_csv('C:\\Users\\asalkanovic1\\Downloads\\WC\\fixtures.csv')
+
+# List for storing the group stage games
+pred_set = []
+
+# Create new columns with ranking position of each team
+fixtures.insert(1, 'first_position', fixtures['Home Team'].map(ranking.set_index('Team')['Position']))
+fixtures.insert(2, 'second_position', fixtures['Away Team'].map(ranking.set_index('Team')['Position']))
