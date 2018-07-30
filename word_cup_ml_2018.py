@@ -68,6 +68,7 @@ plt.xlabel('Nigeria_Result')
 plt.ylabel('Count')
 plt.show()
 
+# Let's begin the main effort
 worldcup_teams = ['Australia', 'Iran', 'Japan', 'Korea Republic',
                   'Saudi Arabia', 'Egypt', 'Morocco', 'Nigeria',
                   'Senegal', 'Tunisia', 'Costa Rica', 'Mexico',
@@ -152,3 +153,18 @@ pred_set = []
 # Create new columns with ranking position of each team
 fixtures.insert(1, 'first_position', fixtures['Home Team'].map(ranking.set_index('Team')['Position']))
 fixtures.insert(2, 'second_position', fixtures['Away Team'].map(ranking.set_index('Team')['Position']))
+
+# We only need the group stage games, so we have to slice the fixtures dataset
+fixtures = fixtures.iloc[:48, :]
+fixtures.tail()
+
+# Loop to add teams to new prediction dataset based on the ranking position of each team
+for index, row in fixtures.iterrows():
+    if row['first_position'] < row['second_position']:
+        pred_set.append({'home_team': row['Home Team'], 'away_team': row['Away Team'], 'winning_team': None})
+    else:
+        pred_set.append({'home_team': row['Away Team'], 'away_team': row['Home Team'], 'winning_team': None})
+
+pred_set = pd.DataFrame(pred_set)
+backup_pred_set = pred_set
+pred_set.head()
