@@ -94,4 +94,29 @@ df_teams_1930 = df_teams[df_teams.match_year >= 1930]
 df_teams_1930.head()
 
 # Drop columns that do not affect match outcome
-df_teams_1930 = df_teams_1930.drop(['date', 'home_score', 'away_score', 'tournament', 'city', 'country', 'goal_difference', 'match_year'], 1)
+df_teams_1930 = df_teams_1930.drop(['date', 'home_score', 'away_score', 'tournament', 'city', 'country', 'neutral','goal_difference', 'match_year'], 1)
+df_teams_1930.head()
+
+
+### Building the model ###
+
+# The prediction label: The winning_team will show '2' if home team has won,
+# a '1' if there was a draw, and a '0' if the home team has lost
+df_teams_1930 = df_teams_1930.reset_index(drop=True)
+df_teams_1930.loc[df_teams_1930.winning_team == df_teams_1930.home_team, 'winning_team']=2
+df_teams_1930.loc[df_teams_1930.winning_team == df_teams_1930.away_team, 'winning_team']=0
+df_teams_1930.loc[df_teams_1930.winning_team == 'Draw', 'winning_team']=1
+
+df_teams_1930.head()
+
+# Convert home team and away team from categorical variables to continuous inputs
+# Get dummy variables
+final = pd.get_dummies(df_teams_1930, prefix = ['home_team','away_team'], columns = ['home_team','away_team'])
+
+# Separate X and Y sets
+X = final.drop(['winning_team'], axis = 1)
+Y = final['winning_team']
+Y = Y.astype('int')
+
+# Separate train and test sets
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.30, random_state = 42)
