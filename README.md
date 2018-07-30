@@ -1,6 +1,6 @@
 # World_Cup_2018
 
-One Paragraph of project description goes here
+The following project predicts match winners for all match fixtures of the World Cup Russia 2018 Tournament.
 
 ## Getting Started
 
