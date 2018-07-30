@@ -3,6 +3,8 @@
 Created on Thu Jul 26 15:18:46 2018
 
 @author: asalkanovic1
+
+Tutorial: https://blog.goodaudience.com/predicting-fifa-world-cup-2018-using-machine-learning-dc07ad8dd576
 """
 
 import pandas as pd
